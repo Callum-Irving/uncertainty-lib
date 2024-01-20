@@ -4,7 +4,6 @@ import unittest
 
 # Python module that provides utilities for working with uncertainty
 
-# TODO: Implement __radd__, __rmul__, __rtruediv__, __rsub__
 # TODO: Implement exponentiation
 # TODO: Implement trig functions
 
@@ -18,6 +17,12 @@ class UncertainValue:
     def __init__(self, value, uncertainty):
         self.value = float(value)
         self.uncertainty = float(uncertainty)
+
+    def format(self, sig_figs: int) -> str:
+        # Format value to sig figs
+        # Find last decimal place of value
+        # Format uncertainty to number of decimal places
+        raise Exception("TODO")
 
     def __repr__(self) -> str:
         return f"{self.value}±{self.uncertainty}"
@@ -36,8 +41,7 @@ class UncertainValue:
             raise Exception("other must be an UncertaintyValue or number type")
 
     def __radd__(self, other):
-        # For addition, order doesn't matter
-        return self.__add__(other)
+        return self + other
 
     def __sub__(self, other):
         return self.__add__(other * -1)
@@ -96,7 +100,7 @@ class UncertainValue:
             or isinstance(other, np.number)
         ):
             quotient = float(other) / self.value
-            uncertainty = quotient * self.value / self.uncertainty
+            uncertainty = quotient * self.uncertainty / self.value
             return UncertainValue(quotient, uncertainty)
         else:
             raise Exception("other must be an UncertaintyValue or number type")
@@ -153,6 +157,18 @@ class TestUncertaintyValue(unittest.TestCase):
     def test_rdiv(self):
         # TODO
         self.assertTrue(False)
+
+
+def sin(x: UncertainValue):
+    return UncertainValue(np.sin(x.value), x.uncertainty * np.abs(np.cos(x.value)))
+
+
+def cos(x: UncertainValue):
+    return UncertainValue(np.cos(x.value), x.uncertainty * np.abs(np.sin(x.value)))
+
+
+def tan(x: UncertainValue):
+    return UncertainValue(np.tan(x.value), x.uncertainty / (np.cos(x.value)) ** 2)
 
 
 if __name__ == "__main__":
